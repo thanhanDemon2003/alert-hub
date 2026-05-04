@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: alerthub
+      DATABASE_PASSWORD: alerthub
+      DATABASE_NAME: alerthub
+      REDIS_URL: redis://redis:6379/0
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./src:/app/src
+    command: npm run start:dev
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: alerthub
+      POSTGRES_PASSWORD: alerthub
+      POSTGRES_DB: alerthub
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U alerthub"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
