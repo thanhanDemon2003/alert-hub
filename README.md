@@ -181,7 +181,7 @@ src/
 ├── common/
 │   └── redis.module.ts            # Global Redis provider
 └── migrations/
-    └── 001-initial-schema.ts      # DB schema + triggers
+    └── 1777714527375-Init.ts      # DB schema + triggers
 ```
 
 ---
